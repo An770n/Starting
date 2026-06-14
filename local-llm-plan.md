@@ -60,20 +60,37 @@ Desktop idles at ~2–4 GB of RAM, which would eat into the headroom your model
 needs. The native install avoids that tax.
 
 ```bash
-# Use a recent Python (3.11+). pipx keeps it isolated and tidy:
-brew install pipx
-pipx install open-webui
+brew install pipx && pipx ensurepath
 
-# Start it (Ollama just needs to be running):
+# IMPORTANT: Open WebUI needs Python 3.11 or 3.12 — NOT 3.13/3.14.
+# Homebrew's default python is often too new, so install 3.11 and pin it:
+brew install python@3.11
+pipx install open-webui --python "$(brew --prefix python@3.11)/bin/python3.11"
+
+# Start it in a NEW terminal window (so the updated PATH is picked up):
 open-webui serve
 ```
 
-Then open **http://localhost:8080**, create a local account (stays on your
-machine), and your Ollama models appear in the model picker.
+First launch runs DB migrations and downloads a ~930 MB embedding model (for
+the chat-with-docs feature) — a one-time wait. When you see
+`Uvicorn running on http://0.0.0.0:8080`, open **http://localhost:8080**,
+create a local account (stays on your machine — no real signup), and your
+Ollama models appear in the model picker.
 
 > If you ever want one-command updates and don't mind the RAM cost, the Docker
 > image (`ghcr.io/open-webui/open-webui:main`) is the alternative — but native
 > is the right call for 16 GB.
+
+#### Gotchas we actually hit (so future-you doesn't)
+
+- **Model pulls can fail with `no such host`** — that's a transient DNS blip,
+  not a real error. Just re-run `ollama pull <model>`; it resumes where it left
+  off.
+- **`pipx install open-webui` fails with "No matching distribution"** — that
+  means pipx grabbed Python 3.14. Use the `--python .../python@3.11` flag above.
+- **Starting it next time:** Ollama auto-starts at login (brew service), but
+  **Open WebUI does not** — after a reboot you must run `open-webui serve`
+  again (and keep that terminal open) before `localhost:8080` will load.
 
 ### Step 5 — Compare and pick a default
 
