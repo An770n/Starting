@@ -22,10 +22,10 @@ keep the one(s) you like.
 |---|-------|-----------|-----------|------|
 | 1 | Qwen 2.5 Coder 7B | `qwen2.5-coder:7b` | ~4.7 GB | **Daily driver** — fast, comfortable |
 | 2 | Qwen 2.5 Coder 14B | `qwen2.5-coder:14b` | ~9 GB | **Quality** — when you can spare RAM |
-| 3 | DeepSeek-Coder-V2-Lite 16B | `deepseek-coder-v2:16b` | ~10 GB | **Wildcard** — MoE, different feel |
+| 3 | Llama 3.1 8B | `llama3.1:8b` | ~4.7 GB | **Generalist** — non-code chat, summaries |
 
-The comparison that matters: **#1 vs #2 (speed vs quality)**. Swap #3 for
-`llama3.1:8b` if you'd rather have one generalist for non-code chat.
+The comparison that matters for coding: **#1 vs #2 (speed vs quality)**. #3 is
+your fallback for everyday non-code chat.
 
 ## Steps
 
@@ -41,7 +41,7 @@ brew install ollama
 ```bash
 ollama pull qwen2.5-coder:7b
 ollama pull qwen2.5-coder:14b
-ollama pull deepseek-coder-v2:16b
+ollama pull llama3.1:8b
 ollama list          # confirm they downloaded
 ```
 
@@ -55,22 +55,25 @@ ollama run qwen2.5-coder:7b
 
 ### Step 4 — Stand up Open WebUI (the browser interface)
 
-Open WebUI talks to Ollama automatically. Easiest path is Docker:
+Run it **natively** (no Docker). On a 16 GB machine this matters: Docker
+Desktop idles at ~2–4 GB of RAM, which would eat into the headroom your model
+needs. The native install avoids that tax.
 
 ```bash
-# Install Docker Desktop for Mac first (docker.com), then:
-docker run -d -p 3000:8080 \
-  --add-host=host.docker.internal:host-gateway \
-  -v open-webui:/app/backend/data \
-  --name open-webui \
-  ghcr.io/open-webui/open-webui:main
+# Use a recent Python (3.11+). pipx keeps it isolated and tidy:
+brew install pipx
+pipx install open-webui
+
+# Start it (Ollama just needs to be running):
+open-webui serve
 ```
 
-Then open **http://localhost:3000**, create a local account (stays on your
+Then open **http://localhost:8080**, create a local account (stays on your
 machine), and your Ollama models appear in the model picker.
 
-> Prefer no Docker? `pip install open-webui` then `open-webui serve` works too,
-> but Docker is the maintained, hassle-free path.
+> If you ever want one-command updates and don't mind the RAM cost, the Docker
+> image (`ghcr.io/open-webui/open-webui:main`) is the alternative — but native
+> is the right call for 16 GB.
 
 ### Step 5 — Compare and pick a default
 
@@ -103,7 +106,7 @@ Wire the same Ollama backend into your editor for inline help:
 ## TL;DR
 
 1. `brew install ollama`
-2. `ollama pull qwen2.5-coder:7b && ollama pull qwen2.5-coder:14b && ollama pull deepseek-coder-v2:16b`
-3. Run Open WebUI in Docker → open `http://localhost:3000`
+2. `ollama pull qwen2.5-coder:7b && ollama pull qwen2.5-coder:14b && ollama pull llama3.1:8b`
+3. `pipx install open-webui && open-webui serve` → open `http://localhost:8080`
 4. Compare the three on real tasks, keep the winner (7B daily, 14B for hard stuff)
 5. Later: add Continue.dev in your editor for inline coding help
