@@ -1,0 +1,44 @@
+# Continue.dev config for local Ollama models (VS Code)
+# Location on your Mac: ~/.continue/config.yaml
+# Docs: https://docs.continue.dev
+#
+# Chat/edit use the Qwen Coder models you already pulled.
+# Autocomplete uses a tiny, fast model so keystrokes stay snappy.
+
+name: Local Assistant
+version: 1.0.0
+schema: v1
+
+models:
+  # --- Chat + code actions (sidebar) ---
+  - name: Qwen 2.5 Coder 7B
+    provider: ollama
+    model: qwen2.5-coder:7b
+    roles:
+      - chat
+      - edit
+      - apply
+
+  - name: Qwen 2.5 Coder 14B
+    provider: ollama
+    model: qwen2.5-coder:14b
+    roles:
+      - chat
+      - edit
+
+  # --- Inline autocomplete (ghost text as you type) ---
+  # Needs the *base* model — it supports fill-in-the-middle, which chat models don't.
+  - name: Qwen 2.5 Coder 1.5B (autocomplete)
+    provider: ollama
+    model: qwen2.5-coder:1.5b-base
+    roles:
+      - autocomplete
+
+  # --- Local embeddings (for "@codebase" / file search in chat) ---
+  - name: Nomic Embed
+    provider: ollama
+    model: nomic-embed-text
+    roles:
+      - embed
+
+# Ollama runs at http://localhost:11434 by default, so no apiBase needed.
